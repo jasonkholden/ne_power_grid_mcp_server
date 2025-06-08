@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "iso-newengland": {
+      "command": "python",
+      "args": ["/Users/jason/disk1/git_projects/laundy_predictor/iso_newengland_mcp_server/run_mcp_server.py"],
+      "env": {
+        "ISO_NE_USERNAME": "your_iso_ne_username",
+        "ISO_NE_PASSWORD": "your_iso_ne_password"
+      }
+    }
+  }
+}
