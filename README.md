@@ -42,9 +42,9 @@ pip install -r requirements.txt
    ```
 
 ### 3. Test the Server
-Run the test script to verify everything is working:
+You can test the MCP tools directly:
 ```bash
-python test_server.py
+python test_mcp_tools.py
 ```
 
 ## Running the MCP Server
@@ -91,11 +91,15 @@ Returns the current marginal fuel types for the New England power grid. The marg
 **Example Usage:**
 "What is the marginal fuel right now in New England?"
 
+![Marginal Fuel Example](./images/marginal_fuel_example.png)
+
 ### `get_full_fuel_mix()`
 Returns the complete current generation fuel mix for the New England power grid, including generation amounts in megawatts and which fuels are marginal.
 
 **Example Usage:**
 "Show me the complete fuel mix for New England's power grid right now."
+
+![Fuel Mix Example](./images/fuel_mix_example.png)
 
 ## Project Structure
 
@@ -103,7 +107,8 @@ Returns the complete current generation fuel mix for the New England power grid,
 iso_newengland_mcp_server/
 ├── main.py                 # Main entry point
 ├── run_mcp_server.py       # Convenience script with better error handling
-├── test_server.py          # Test script
+├── test_mcp_tools.py       # Test script for MCP tools
+├── test_api_direct.py      # Direct API testing script
 ├── requirements.txt        # Python dependencies
 ├── .env.example           # Example environment variables
 ├── mcp-config.json        # Example MCP client configuration
