@@ -1,0 +1,29 @@
+# Credentials - never include in image
+.env
+.env.*
+*.secret
+
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.venv
+venv
+
+# IDE
+.vscode
+.idea
+
+# Tests and docs
+tests/
+external_docs/
+images/
+*.md
+
+# Misc
+.DS_Store
