@@ -64,7 +64,14 @@ The server will communicate via JSON-RPC over stdin/stdout and can be connected 
 ## MCP Client Configuration
 
 ### Claude Desktop Configuration
-Add this to your Claude Desktop MCP configuration file:
+
+Run the MCP command to add this tool:
+
+```
+claude mcp add newengland-power-grid   -e ISO_NE_USERNAME=${ISO_NE_USERNAME}   -e ISO_NE_PASSWORD=${ISO_NE_PASSWORD}   -- python `pwd`/run_mcp_server.py
+```
+
+Or manually add this to your Claude Desktop MCP configuration file:
 
 ```json
 {
