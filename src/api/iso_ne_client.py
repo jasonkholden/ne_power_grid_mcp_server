@@ -58,3 +58,27 @@ class ISONewEnglandClient:
         ]
         
         return marginal_fuels
+
+    async def get_seven_day_forecast(self) -> Dict[str, Any]:
+        """Get the current Seven-Day Capacity Forecast data."""
+        url = f"{self.base_url}/sevendayforecast/current.json"
+        
+        logger.info(f"Requesting seven day forecast data from: {url}")
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url,
+                auth=self.auth,
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                timeout=30.0
+            )
+            
+            logger.info(f"Response status: {response.status_code}")
+            
+            response.raise_for_status()
+            data = response.json()
+            
+            return data

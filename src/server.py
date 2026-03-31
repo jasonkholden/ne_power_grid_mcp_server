@@ -74,6 +74,22 @@ async def get_full_fuel_mix() -> str:
         logger.error(f"Error getting fuel mix: {e}")
         return f"Error retrieving fuel mix data: {str(e)}"
 
+@mcp.tool()
+async def get_seven_day_forecast() -> str:
+    """
+    Get the seven-day capacity forecast for the New England power grid.
+    
+    Returns:
+        A JSON string representation of the seven-day forecast data.
+    """
+    try:
+        forecast_data = await iso_client.get_seven_day_forecast()
+        return json.dumps(forecast_data, indent=2)
+        
+    except Exception as e:
+        logger.error(f"Error getting seven day forecast: {e}")
+        return f"Error retrieving seven day forecast data: {str(e)}"
+
 def run_sync():
     """Run the MCP server synchronously, handling asyncio loop conflicts."""
     try:
