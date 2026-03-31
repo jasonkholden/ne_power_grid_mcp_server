@@ -30,6 +30,11 @@ async def test_mcp_tools():
         from src.server import get_full_fuel_mix
         result2 = await get_full_fuel_mix()
         print(f"📝 Result:\n{result2}")
+
+        print("\n🎯 Testing MCP tool: get_seven_day_forecast()")
+        from src.server import get_seven_day_forecast
+        result3 = await get_seven_day_forecast()
+        print(f"📝 Result:\n{result3}")
         
     except Exception as e:
         print(f"❌ Error: {e}")
