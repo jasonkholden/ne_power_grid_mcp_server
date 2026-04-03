@@ -3,6 +3,7 @@ import logging
 from typing import Dict, Any, List
 from ..config.settings import settings
 from ..models.fuel_mix import FuelMixResponse
+from ..models.load_forecast import HourlyLoadForecastResponse
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,66 @@ class ISONewEnglandClient:
             
             return data
     
+    async def get_hourly_load_forecast(self, day: str = None) -> Dict[str, Any]:
+        """Get hourly load forecast data for a given day.
+
+        Args:
+            day: Date string in YYYYMMDD format. Defaults to tomorrow.
+        """
+        if day is None:
+            from datetime import date, timedelta
+            day = (date.today() + timedelta(days=1)).strftime("%Y%m%d")
+
+        url = f"{self.base_url}/hourlyloadforecast/day/{day}.json"
+
+        logger.info(f"Requesting hourly load forecast from: {url}")
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url,
+                auth=self.auth,
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                timeout=30.0
+            )
+
+            logger.info(f"Response status: {response.status_code}")
+
+            response.raise_for_status()
+            return response.json()
+
+    async def get_five_minute_system_load(self, day: str = None) -> Dict[str, Any]:
+        """Get five-minute system load data including BTM solar estimates.
+
+        Args:
+            day: Date string in YYYYMMDD format. Defaults to today.
+        """
+        if day is None:
+            from datetime import date
+            day = date.today().strftime("%Y%m%d")
+
+        url = f"{self.base_url}/fiveminutesystemload/day/{day}.json"
+
+        logger.info(f"Requesting five-minute system load from: {url}")
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url,
+                auth=self.auth,
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                timeout=30.0
+            )
+
+            logger.info(f"Response status: {response.status_code}")
+
+            response.raise_for_status()
+            return response.json()
+
     async def get_marginal_fuels(self) -> List[str]:
         """Get list of current marginal fuels."""
         fuel_mix_data = await self.get_current_fuel_mix()

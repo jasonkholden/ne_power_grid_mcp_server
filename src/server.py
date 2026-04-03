@@ -75,17 +75,103 @@ async def get_full_fuel_mix() -> str:
         return f"Error retrieving fuel mix data: {str(e)}"
 
 @mcp.tool()
+async def get_hourly_load_forecast(day: str = None) -> str:
+    """
+    Get the hourly load forecast for the New England power grid.
+
+    Returns the forecasted electricity demand (load) for each hour of the
+    specified day, in megawatts (MW). Defaults to tomorrow's forecast.
+
+    Args:
+        day: Optional date in YYYYMMDD format (e.g. "20260314"). Defaults to tomorrow.
+
+    Returns:
+        A formatted string with the hourly load forecast data.
+    """
+    try:
+        forecast_data = await iso_client.get_hourly_load_forecast(day)
+
+        forecasts = forecast_data["HourlyLoadForecasts"]["HourlyLoadForecast"]
+
+        if not forecasts:
+            return "No hourly load forecast data is currently available."
+
+        creation_date = forecasts[0]["CreationDate"] if forecasts else "Unknown"
+        result = f"Hourly Load Forecast (created {creation_date}):\n\n"
+        result += f"{'Hour':<22} {'Load MW':>10} {'Net MW':>10}\n"
+        result += f"{'─'*22} {'─'*10} {'─'*10}\n"
+
+        for entry in forecasts:
+            begin_date = entry["BeginDate"]
+            load_mw = entry["LoadMw"]
+            net_load_mw = entry["NetLoadMw"]
+            result += f"{begin_date:<22} {load_mw:>10,.0f} {net_load_mw:>10,.0f}\n"
+
+        peak = max(forecasts, key=lambda e: e["NetLoadMw"])
+        low = min(forecasts, key=lambda e: e["NetLoadMw"])
+        result += f"\nPeak: {peak['NetLoadMw']:,.0f} MW at {peak['BeginDate']}\n"
+        result += f" Low: {low['NetLoadMw']:,.0f} MW at {low['BeginDate']}\n"
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error getting hourly load forecast: {e}")
+        return f"Error retrieving hourly load forecast data: {str(e)}"
+
+@mcp.tool()
+async def get_system_load_with_btm_solar(day: str = None) -> str:
+    """
+    Get the system load for the New England power grid, including
+    estimated behind-the-meter (BTM) solar generation.
+
+    Returns 5-minute interval data for the specified day with grid load,
+    native load, and the estimated BTM solar output in megawatts (MW).
+    BTM solar is derived as: SystemLoadBtmPv - LoadMw.
+
+    Args:
+        day: Optional date in YYYYMMDD format (e.g. "20260313"). Defaults to today.
+
+    Returns:
+        A formatted table with system load and BTM solar data.
+    """
+    try:
+        data = await iso_client.get_five_minute_system_load(day)
+
+        entries = data["FiveMinSystemLoads"]["FiveMinSystemLoad"]
+
+        if not entries:
+            return "No system load data is currently available."
+
+        result = f"System Load with BTM Solar ({entries[0]['BeginDate'][:10]}):\n\n"
+        result += f"{'Time':<10} {'Grid MW':>10} {'Native MW':>10} {'ARD MW':>8} {'BTM Solar MW':>12}\n"
+        result += f"{'─'*10} {'─'*10} {'─'*10} {'─'*8} {'─'*12}\n"
+
+        for entry in entries:
+            time = entry["BeginDate"][11:19]
+            load_mw = entry["LoadMw"]
+            native = entry["NativeLoad"]
+            ard = entry["ArdDemand"]
+            btm_solar = entry["SystemLoadBtmPv"] - load_mw
+            result += f"{time:<10} {load_mw:>10,.1f} {native:>10,.1f} {ard:>8,.1f} {btm_solar:>12,.1f}\n"
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error getting system load: {e}")
+        return f"Error retrieving system load data: {str(e)}"
+
+@mcp.tool()
 async def get_seven_day_forecast() -> str:
     """
     Get the seven-day capacity forecast for the New England power grid.
-    
+
     Returns:
         A JSON string representation of the seven-day forecast data.
     """
     try:
         forecast_data = await iso_client.get_seven_day_forecast()
         return json.dumps(forecast_data, indent=2)
-        
+
     except Exception as e:
         logger.error(f"Error getting seven day forecast: {e}")
         return f"Error retrieving seven day forecast data: {str(e)}"
