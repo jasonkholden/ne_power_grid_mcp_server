@@ -108,6 +108,15 @@ Returns the complete current generation fuel mix for the New England power grid,
 
 ![Fuel Mix Example](./images/fuel_mix_example.png)
 
+### `get_hourly_load_forecast(day)`
+Returns the forecasted electricity demand (load) for each hour of a given day in MW. Defaults to tomorrow.
+
+### `get_system_load_with_btm_solar(day)`
+Returns 5-minute interval system load data including estimated behind-the-meter (BTM) solar generation in MW. Defaults to today.
+
+### `get_seven_day_forecast()`
+Returns the seven-day capacity forecast for the New England power grid.
+
 ## Project Structure
 
 ```
@@ -142,6 +151,9 @@ https://webservices.iso-ne.com/api/v1.1
 
 ### Endpoints Used
 - `/genfuelmix/current` - Current generation fuel mix data
+- `/hourlyloadforecast/day/{day}` - Hourly load forecast for a given day
+- `/fiveminutesystemload/day/{day}` - Five-minute system load with BTM solar
+- `/sevendayforecast/current` - Seven-day capacity forecast
 
 Full endpoint example to get a json result: [https://webservices.iso-ne.com/api/v1.1//genfuelmix/current.json]
 
